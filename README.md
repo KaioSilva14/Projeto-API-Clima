@@ -8,13 +8,14 @@
 ![React Native](https://img.shields.io/badge/React_Native-0.86-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Zustand](https://img.shields.io/badge/Zustand-estado-7B5A3A?style=for-the-badge)
-![Testes](https://img.shields.io/badge/testes-53_passando-2E9D5B?style=for-the-badge&logo=jest&logoColor=white)
+![Testes](https://img.shields.io/badge/testes-57_passando-2E9D5B?style=for-the-badge&logo=jest&logoColor=white)
 
 **Um app de clima que não só mostra números: ele explica o que eles significam para o seu dia.**
 
 [Funcionalidades](#-funcionalidades) •
 [Telas](#-telas) •
 [Como rodar](#-como-rodar) •
+[APK](#-gerar-o-apk-android) •
 [Arquitetura](#-arquitetura) •
 [Decisões técnicas](#-decisões-técnicas)
 
@@ -73,7 +74,7 @@ A interpretação é feita por **regras** em uma função pura ([`interpretarCli
 | 📅 | **Previsão** | Próximas 24 horas, gráfico de temperatura desenhado em SVG e 5 dias |
 | 🏙️ | **Cidades** | Busca com *debounce* e cidades favoritas salvas no aparelho |
 | 🎨 | **Visual dinâmico** | Gradientes de dia e de noite, animação de chuva e relâmpago; respeita a opção "reduzir movimento" |
-| 🗺️ | **Mapa meteorológico** | Camadas de chuva, nuvens, temperatura e vento sobre o mapa |
+| 🗺️ | **Mapa meteorológico** | Leaflet + OpenStreetMap com camadas de chuva, nuvens, temperatura e vento (sem chave do Google) |
 | 🔔 | **Alertas** | Tempestade, chuva forte, calor, frio e vento forte, com notificação local |
 | 🕘 | **Histórico** | Consultas salvas por data (ex.: 23/09 — 27°C) |
 | ⚙️ | **Configurações** | °C/°F, tema claro/escuro/sistema, notificações e permissões |
@@ -84,10 +85,11 @@ A interpretação é feita por **regras** em uma função pura ([`interpretarCli
 <div align="center">
 <table>
 <tr>
-<td align="center"><img src="docs/tela-cidades.png" width="200" alt="Tela de cidades" /><br /><sub><b>Cidades</b></sub></td>
-<td align="center"><img src="docs/tela-alertas.png" width="200" alt="Tela de alertas" /><br /><sub><b>Alertas</b></sub></td>
-<td align="center"><img src="docs/tela-previsao-escuro.png" width="200" alt="Previsão no tema escuro" /><br /><sub><b>Tema escuro</b></sub></td>
-<td align="center"><img src="docs/tela-configuracoes.png" width="200" alt="Tela de configurações" /><br /><sub><b>Configurações</b></sub></td>
+<td align="center"><img src="docs/tela-cidades.png" width="160" alt="Tela de cidades" /><br /><sub><b>Cidades</b></sub></td>
+<td align="center"><img src="docs/tela-mapa.png" width="160" alt="Tela do mapa" /><br /><sub><b>Mapa</b></sub></td>
+<td align="center"><img src="docs/tela-alertas.png" width="160" alt="Tela de alertas" /><br /><sub><b>Alertas</b></sub></td>
+<td align="center"><img src="docs/tela-previsao-escuro.png" width="160" alt="Previsão no tema escuro" /><br /><sub><b>Tema escuro</b></sub></td>
+<td align="center"><img src="docs/tela-configuracoes.png" width="160" alt="Tela de configurações" /><br /><sub><b>Configurações</b></sub></td>
 </tr>
 </table>
 
@@ -135,6 +137,26 @@ Escaneie o QR Code com o Expo Go (Android) ou com a câmera (iOS).
 | `npm run typecheck` | Verifica os tipos do TypeScript |
 | `npm run lint` | Procura erros comuns no código (ESLint) |
 
+## 📦 Gerar o APK (Android)
+
+O APK é gerado na nuvem pelo [EAS Build](https://docs.expo.dev/build/introduction/), de graça. Não precisa instalar Android Studio.
+
+```bash
+# 1. Entre na sua conta Expo (crie grátis em expo.dev)
+npx eas-cli@latest login
+
+# 2. Vincule o projeto à sua conta (só na primeira vez)
+npx eas-cli@latest init
+
+# 3. Cadastre a chave da OpenWeather na nuvem (o .env não é enviado)
+npx eas-cli@latest env:create --environment preview --name EXPO_PUBLIC_OPENWEATHER_API_KEY --value SUA_CHAVE --visibility sensitive
+
+# 4. Gere o APK
+npx eas-cli@latest build --platform android --profile preview
+```
+
+No final, o EAS mostra um **link e um QR Code** para baixar o APK direto no celular.
+
 ## 🏗️ Arquitetura
 
 ```mermaid
@@ -176,6 +198,7 @@ assets/brand/           Logo e ícones em SVG (originais editáveis)
 | **Zustand** em vez de Redux/Context | API pequena, sem *boilerplate*, e já vem com persistência (`persist`) |
 | **Gráfico próprio em SVG** | Um gráfico de linha não justifica uma biblioteca inteira, e ensina a converter valores em coordenadas |
 | **Endpoints gratuitos da OpenWeather** | Não exigem cartão de crédito. O índice UV é buscado de forma opcional |
+| **Mapa com Leaflet + OpenStreetMap** em uma WebView | No Android, o `react-native-maps` usa o Google Maps, que exige chave do Google Cloud com cartão de crédito. Assim o mapa funciona no Expo Go, no APK e na web |
 | **Notificações carregadas sob demanda** | No Expo Go para Android, só importar `expo-notifications` quebra o app. A biblioteca é carregada só onde funciona |
 | **Contador de requisições** | Se o usuário troca de cidade durante uma busca, a resposta antiga é descartada |
 
@@ -185,7 +208,6 @@ assets/brand/           Logo e ícones em SVG (originais editáveis)
 - A **previsão** vem em blocos de 3 horas, por até 5 dias (limite do plano gratuito).
 - Os **alertas** são verificados quando o app abre ou atualiza, e não com o app fechado.
 - As **notificações** não funcionam no Expo Go para Android, só no app instalado (*development build*).
-- O **mapa** não funciona na versão web.
 
 ## 🗺️ Próximos passos
 

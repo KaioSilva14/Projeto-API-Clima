@@ -67,7 +67,7 @@ Este é um projeto de portfólio/aprendizado para quem está migrando de carreir
 | Notificações | Expo Notifications |
 | Armazenamento local | AsyncStorage |
 | Gerenciamento de estado | Zustand |
-| Mapas | React Native Maps (ou lib compatível com Expo) |
+| Mapas | Leaflet + OpenStreetMap em `react-native-webview` (`src/utils/mapaHtml.ts`) — ver seção 11 |
 | Gráficos | componente próprio com `react-native-svg` (`src/components/TemperatureChart.tsx`) — ver seção 11 |
 | Testes | Jest (`jest-expo`) para as funções puras de `src/utils` |
 | Versionamento | Git + GitHub |
@@ -238,8 +238,9 @@ Pontos em que a especificação original precisou de ajuste ao ser implementada:
 | Chave da API | Variável `EXPO_PUBLIC_OPENWEATHER_API_KEY` no `.env` (não versionado) | Sem backend, a chave fica embutida no app — risco aceito por ser uma chave gratuita |
 | Gráficos | Componente próprio com `react-native-svg` em vez de biblioteca de charts | Um gráfico de linha simples não justifica a dependência e é mais didático |
 | Alertas | Avaliados quando o app busca dados (ao abrir ou atualizar), com notificação local | Verificar com o app fechado exige tarefa em segundo plano — evolução futura |
-| Mapa na web | `WeatherMap.web.tsx` mostra um aviso | `react-native-maps` não funciona no navegador |
-| Mapa no Android (build próprio) | Exige chave do Google Maps no `app.json` | No Expo Go funciona sem configuração |
+| Mapa | Leaflet + OpenStreetMap numa WebView (no navegador, um `<iframe>` em `WeatherMap.web.tsx`); camadas de clima da OpenWeather | O `react-native-maps` usa Google Maps no Android, que exige chave do Google Cloud com cartão — sem ela o mapa fica em branco no APK |
+| Notificações | `expo-notifications` é carregado sob demanda e desativado no Expo Go para Android | Desde o SDK 53, só importar a biblioteca no Expo Go para Android lança erro |
+| APK | EAS Build, perfil `preview` do `eas.json` (gera `.apk`); a chave da API vai como variável de ambiente do EAS | O `.env` não é enviado para a nuvem |
 | Cache | O último clima consultado fica salvo; sem internet, o app mostra esses dados com um aviso | Seção 3: cache local em vez de backend |
 
 ## 12. Status do desenvolvimento
@@ -256,7 +257,7 @@ Itens da seção 8:
 - [x] 8. Settings (unidade, tema, notificações, permissões)
 - [x] 9. Histórico (exibido na aba Previsão)
 - [x] 10. Alertas + notificações locais
-- [x] 11. Map (camadas de chuva, nuvens, temperatura e vento)
+- [x] 11. Map (Leaflet + OpenStreetMap; camadas de chuva, nuvens, temperatura e vento)
 - [ ] 12. Widget (fora do escopo da V1)
 
 Próximos passos sugeridos: testar em aparelho real, criar o design no Figma, verificar alertas em segundo plano (`expo-background-task`) e fazer gráficos a partir do histórico.
