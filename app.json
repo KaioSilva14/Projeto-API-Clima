@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "WeatherFlow",
+    "slug": "weatherflow",
+    "scheme": "weatherflow",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.weatherflow.app"
+    },
+    "android": {
+      "package": "com.weatherflow.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#2F6FED",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "O WeatherFlow usa sua localização para mostrar o clima da cidade onde você está."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#2F6FED"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#2F6FED",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#0D1421"
+          }
+        }
+      ]
+    ]
+  }
+}
